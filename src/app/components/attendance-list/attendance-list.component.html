@@ -1,0 +1,148 @@
+<p *ngIf="!isMod">Bitte Rechte erfragen!</p>
+<div *ngIf="isMod">
+  <h2 class="mt-4">Neuen Eintrag erstellen</h2>
+  <form>
+    <div class="row mt-2">
+      <div class="col">
+        <label for="inputDate">Datum</label>
+        <input type="date" id="inputDate" name="inputDate" aria-label="" class="form-control"
+               [(ngModel)]="tmpAttendance.date"
+        >
+      </div>
+      <div class="col">
+        <label for="inputStartTime">Von</label>
+        <input type="time" id="inputStartTime" name="inputStartTime" aria-label="" class="form-control"
+               [(ngModel)]="tmpAttendance.startTime">
+      </div>
+      <div class="col">
+        <label for="inputEndTime">Bis</label>
+        <input type="time" id="inputEndTime" name="inputEndTime" aria-label="" class="form-control"
+               [(ngModel)]="tmpAttendance.endTime">
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col">
+        <label for="inputDegreeCourse">Studiengang</label>
+        <input type="text" id="inputDegreeCourse" name="inputDegreeCourse" aria-label="" class="form-control"
+               [(ngModel)]="tmpAttendance.degreeCourse" list="degreeCourses">
+        <datalist id="degreeCourses">
+          <option value="Angewandte Informatik (B.Sc.)">
+          <option value="Advanced Media Technology (M.Eng.)">
+          <option value="Angewandte Mathematik (B.Sc.)">
+          <option value="Angewandte Mathematik (M.Sc.)">
+          <option value="Angewandte Physik (B.Sc.)">
+          <option value="Angewandte Physik (M.Sc.)">
+          <option value="Bauingenieurwesen (B.Eng.)">
+          <option value="Bio- und Umwelttechnik (M.Eng.)">
+          <option value="BIS Elektrotechnik (Dipl.-Ing.)">
+          <option value="BIS Maschinenbau (B.Eng.)">
+          <option value="BIS Product Development & Manufacturing (M.Eng.)">
+          <option value="BIS Wirtschaftsingenieurwesen (M.Eng.)">
+          <option value="Business Administration (B.A.)">
+          <option value="Business and Law in Accounting and Taxation (LL.B.)">
+          <option value="Business and Law in Accounting and Taxation (LL.M.)">
+          <option value="Controlling and Finance (M.A.)">
+          <option value="Digital Business Management (B.Sc.)">
+          <option value="Electrical Engineering - Connected Systems (M.Eng.)">
+          <option value="Elektro- und Luftfahrttechnik (B.Eng.)">
+          <option value="Elektrotechnik (B.Eng.)">
+          <option value="Fahrzeugentwickl., Energietech. u. Produktionsplanung (M.Eng.)">
+          <option value="Gesundheitökonomie (B.Sc.)">
+          <option value="Immobilienmanagement (B.Eng.)">
+          <option value="Informatik - Technische Systeme (B.Sc.)">
+          <option value="Innenarchitektur (B.A.)">
+          <option value="Interdisziplinäre Ingenieurwissenschaften (B.Eng.)">
+          <option value="International Management (B.A.)">
+          <option value="International Management (M.A.)">
+          <option value="Internationales Wirtschaftsingenieurwesen (B.Eng.)">
+          <option value="Kooperatives Ingenieurstudium Elektrotechnik (B.Eng.)">
+          <option value="Kooperatives Ingenieurstudium Mechatronik (B.Eng.)">
+          <option value="Kooperatives Ingenieurstudium Medientechnik (B.Eng.)">
+          <option value="Management im Gesundheitswesen (M.A.)">
+          <option value="Maschinenbau (B.Eng.)">
+          <option value="Media and Communications Technology (M.Eng.)">
+          <option value="Media Management (B.Sc.)">
+          <option value="Medieninformatik (B.SC.)">
+          <option value="Medientechnik (B.Eng.)">
+          <option value="Medizintechnik (M.Sc.)">
+          <option value="Mobilitäsmanagement (B.Eng.)">
+          <option value="Physikalische Technik (B.Sc.)">
+          <option value="Sales and Marketing Management (M.A.)">
+          <option value="Umwelttechnik (B.Eng.)">
+          <option value="Versicherungs- und Finanzwirtschaft (AIS) (B.Sc.)">
+          <option value="Versicherungs- und Finanzwirtschaft (B.Sc.)">
+          <option value="Versicherungs- und Finanzwirtschaft (M.Sc.)">
+          <option value="Wirtschaftsinformatik (B.Sc.)">
+          <option value="Wirtschaftsingenieurwesen (B.Eng.)">
+          <option value="Keine Angabe">
+          <option value="Sonstiges">
+        </datalist>
+      </div>
+      <div class="col">
+        <label for="inputFaculty">Fachbereich</label>
+        <input type="text" name="inputFaculty" id="inputFaculty" aria-label="" class="form-control"
+               [(ngModel)]="tmpAttendance.faculty" list="faculties">
+        <datalist id="faculties">
+          <option value="Architektur und Bauingenieurwesen">
+          <option value="Sozialwesen">
+          <option value="Design Informatik Medien (DCSM)">
+          <option value="Wiesbaden Business School">
+          <option value="Ingenieurwissenschaften">
+        </datalist>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <label for="checkTopics">Themen</label>
+      <div class="btn-group" id="checkTopics" role="group" aria-label="">
+        <input type="checkbox" class="btn-check" id="checkMathBasis" name="checkMathBasis" autocomplete="off"
+               [(ngModel)]="tmpAttendance.mathBasic">
+        <label class="btn btn-outline-secondary" for="checkMathBasis">Mathe Schulwissen</label><br>
+        <input type="checkbox" class="btn-check" id="checkMathLow" name="checkMathLow" autocomplete="off"
+               [(ngModel)]="tmpAttendance.mathLow">
+        <label class="btn btn-outline-secondary" for="checkMathLow">Mathe 1 u. 2 Sem</label><br>
+        <input type="checkbox" class="btn-check" id="checkMathHigh" name="checkMathHigh" autocomplete="off"
+               [(ngModel)]="tmpAttendance.mathHigh">
+        <label class="btn btn-outline-secondary" for="checkMathHigh">Mathe 3+ Sem</label><br>
+        <input type="checkbox" class="btn-check" id="checkProgramming" name="checkProgramming" autocomplete="off"
+               [(ngModel)]="tmpAttendance.programming">
+        <label class="btn btn-outline-secondary" for="checkProgramming">Programm.</label><br>
+        <input type="checkbox" class="btn-check" id="checkPhysics" name="checkPhysics" autocomplete="off"
+               [(ngModel)]="tmpAttendance.physics">
+        <label class="btn btn-outline-secondary" for="checkPhysics">Physic</label><br>
+        <input type="checkbox" class="btn-check" id="checkChem" name="checkChem" autocomplete="off"
+               [(ngModel)]="tmpAttendance.chemistry">
+        <label class="btn btn-outline-secondary" for="checkChem">Chemie</label><br>
+        <input type="checkbox" class="btn-check" id="checkOrg" name="checkOrg" autocomplete="off"
+               [(ngModel)]="tmpAttendance.organizational">
+        <label class="btn btn-outline-secondary" for="checkOrg">Orga.</label><br>
+      </div>
+      <div class="mt-4 mb-5">
+        <button (click)="saveAttendance()" class="btn btn-success">Erstellen</button>
+      </div>
+    </div>
+  </form>
+  <div class>
+    <h2 class="mt-4">Alle Einträge</h2>
+    <div class=" mt-2 mb-3">
+      <button (click)="downloadFile(AttendancesByDate)" class="btn btn-success mx-auto">Download</button>
+    </div>
+  </div>
+  <div class="list-group mb-4" *ngFor="let attendances of AttendancesByDate; let i = index">
+    <h4>{{getWeekday(attendances[0].date)}} {{formatDate(attendances[0].date)}}</h4>
+    <a routerLink="/attendance/{{ attendance.id }}" class="list-group-item list-group-item-action"
+       aria-current="true" *ngFor="let attendance of attendances">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">{{attendance.startTime}} - {{attendance.endTime}}</h5>
+        <small>{{attendance.tutor.username}}</small>
+      </div>
+      <p class="mb-1">{{attendance.degreeCourse}} - {{attendance.faculty}}</p>
+      <small class="mr-1" *ngIf="attendance.mathBasic">&#9746; Mathe Schulwissen</small>
+      <small class="mr-1" *ngIf="attendance.mathLow">&#9746; Mathe 1 u. 2 Sem</small>
+      <small class="mr-1" *ngIf="attendance.mathHigh">&#9746; Mathe 3+ Sem</small>
+      <small class="mr-1" *ngIf="attendance.programming">&#9746; Programmierung</small>
+      <small class="mr-1" *ngIf="attendance.physics">&#9746; Physic</small>
+      <small class="mr-1" *ngIf="attendance.chemistry">&#9746; Chemie</small>
+      <small class="mr-1" *ngIf="attendance.organizational">&#9746; Organisatorisches</small>
+    </a>
+  </div>
+</div>
