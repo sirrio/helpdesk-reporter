@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
+import {Injectable, isDevMode} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Attendance} from '../models/attendance.model';
 
-const API_URL = 'http://localhost:8080/api/attendance';
+let API_URL: string;
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,11 @@ const API_URL = 'http://localhost:8080/api/attendance';
 export class AttendanceService {
 
   constructor(private http: HttpClient) {
+    if (isDevMode()) {
+      API_URL = 'http://localhost:8080/api/attendance';
+    } else {
+      API_URL = 'http://134.122.90.155:8080/api/attendance';
+    }
   }
 
   getAll(): Observable<Attendance[]> {
