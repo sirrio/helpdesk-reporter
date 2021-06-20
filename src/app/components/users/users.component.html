@@ -2,12 +2,26 @@
   <h4>Mitgliederliste</h4>
   <div class="list-group-item list-group-item-action" *ngFor="let user of user">
     <div class="d-flex w-100 justify-content-between">
-      <h5 class="mb-1">Mitglied: {{user.username}}</h5>
+      <h5 class="mb-1">{{user.username}}</h5>
       <small>s</small>
     </div>
-    <div *ngFor="let role of user.roles" class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input">
-      <label class="custom-control-label mx-2" >{{ role.name }}</label>
+    <div>
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input">
+        {{RoleEnum.ADMIN}}
+      </label>
+    </div>
+    <div>
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input">
+        {{RoleEnum.MOD}}
+      </label>
+    </div>
+    <div>
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input">
+        {{RoleEnum.USER}}
+      </label>
     </div>
   </div>
 </div>

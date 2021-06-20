@@ -1,3 +1,5 @@
-export class Role {
-  name?: string;
+export enum Role {
+  ADMIN= 'admin',
+  MOD = 'moderator',
+  USER = 'user'
 }

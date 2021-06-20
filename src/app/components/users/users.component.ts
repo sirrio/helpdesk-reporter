@@ -18,7 +18,8 @@ export class UsersComponent implements OnInit {
   isLoggedIn = false;
   username?: string;
   userid?: any;
-  roles: Array<Role> | undefined;
+
+  RoleEnum = Role;
 
   constructor(private userService: UserService,
               private tokenStorageService: TokenStorageService) {
@@ -34,6 +35,8 @@ export class UsersComponent implements OnInit {
 
       this.userService.getAll().subscribe(res => {
         this.user = res;
+        console.log(this.user);
+
       });
     }
 
