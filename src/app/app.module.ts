@@ -10,9 +10,9 @@ import {RegisterComponent} from './components/register/register.component';
 import {ProfileComponent} from './components/profile/profile.component';
 import {AttendanceDetailsComponent} from './components/attendance-details/attendance-details.component';
 import {AttendanceListComponent} from './components/attendance-list/attendance-list.component';
-
 import {authInterceptorProviders} from './helpers/auth.interceptor';
 import {DatePipe} from '@angular/common';
+import {UsersComponent} from './components/users/users.component';
 
 
 @NgModule({
@@ -23,6 +23,7 @@ import {DatePipe} from '@angular/common';
     ProfileComponent,
     AttendanceDetailsComponent,
     AttendanceListComponent,
+    UsersComponent,
   ],
   imports: [
     BrowserModule,

@@ -83,6 +83,7 @@
         <input type="text" name="inputFaculty" id="inputFaculty" aria-label="" class="form-control"
                [(ngModel)]="tmpAttendance.faculty" list="faculties">
         <datalist id="faculties">
+          <option value="Mathematik">
           <option value="Architektur und Bauingenieurwesen">
           <option value="Sozialwesen">
           <option value="Design Informatik Medien (DCSM)">
@@ -128,7 +129,7 @@
     </div>
   </div>
   <div class="list-group mb-4" *ngFor="let attendances of AttendancesByDate; let i = index">
-    <h4>{{getWeekday(attendances[0].date)}} {{formatDate(attendances[0].date)}}</h4>
+    <h4>{{getWeekday(attendances[0].date)}} {{formatDate(attendances[0].date)}} - Besucher: {{attendances.length}}</h4>
     <a routerLink="/attendance/{{ attendance.id }}" class="list-group-item list-group-item-action"
        aria-current="true" *ngFor="let attendance of attendances">
       <div class="d-flex w-100 justify-content-between">

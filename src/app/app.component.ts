@@ -8,6 +8,7 @@ import {TokenStorageService} from './services/token-storage.service';
 })
 export class AppComponent implements OnInit {
   isLoggedIn = false;
+  isAdmin = false;
 
   username?: string;
 
@@ -20,6 +21,7 @@ export class AppComponent implements OnInit {
     if (this.isLoggedIn) {
       const user = this.tokenStorageService.getUser();
       this.username = user.username;
+      this.isAdmin = user.roles.includes('ROLE_ADMIN');
     }
   }
 
