@@ -13,7 +13,9 @@ import {AttendanceListComponent} from './components/attendance-list/attendance-l
 import {authInterceptorProviders} from './helpers/auth.interceptor';
 import {DatePipe} from '@angular/common';
 import {UsersComponent} from './components/users/users.component';
-
+import {StatisticsComponent} from './components/statistics/statistics.component';
+import {NgxChartsModule} from '@swimlane/ngx-charts';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -24,13 +26,16 @@ import {UsersComponent} from './components/users/users.component';
     AttendanceDetailsComponent,
     AttendanceListComponent,
     UsersComponent,
+    StatisticsComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxChartsModule,
+    BrowserAnimationsModule
   ],
   providers: [
     authInterceptorProviders,
