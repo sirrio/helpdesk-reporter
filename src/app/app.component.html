@@ -11,10 +11,10 @@
         </li>
       </ul>
       <ul class="navbar-nav ml-auto" *ngIf="isLoggedIn">
-        <li class="nav-item mx-5">
+        <li class="nav-item">
           <a *ngIf="isAdmin" href="/statistic" class="nav-link" routerLink="statistic">Statistik</a>
         </li>
-        <li *ngIf="isAdmin" class="nav-item mx-5">
+        <li *ngIf="isAdmin" class="nav-item nav-freespace">
           <a href="/users" class="nav-link" routerLink="users">Mitglieder bearbeiten</a>
         </li>
         <li class="nav-item">
