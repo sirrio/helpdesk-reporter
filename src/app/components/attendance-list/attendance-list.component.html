@@ -129,7 +129,9 @@
     </div>
   </div>
   <div class="list-group mb-4" *ngFor="let attendances of AttendancesByDate; let i = index">
-    <h4>{{getWeekday(attendances[0].date)}} {{formatDate(attendances[0].date)}} - Besucher: {{attendances.length}}</h4>
+    <h4>{{getWeekday(attendances[0].date)}} {{formatDate(attendances[0].date)}} <span
+      class="fs-6 small text-muted">Besucher: {{attendances.length}}</span></h4>
+
     <a routerLink="/attendance/{{ attendance.id }}" class="list-group-item list-group-item-action"
        aria-current="true" *ngFor="let attendance of attendances">
       <div class="d-flex w-100 justify-content-between">
