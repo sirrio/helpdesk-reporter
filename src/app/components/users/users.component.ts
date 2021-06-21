@@ -4,6 +4,8 @@ import {UserService} from '../../services/user.service';
 import {TokenStorageService} from '../../services/token-storage.service';
 import {User} from 'src/app/models/user.model';
 import {Role} from '../../models/role.model';
+import {map, mergeMap} from 'rxjs/operators';
+import {forkJoin} from 'rxjs';
 
 
 @Component({
@@ -12,14 +14,12 @@ import {Role} from '../../models/role.model';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-  user?: User[];
+  users: { isMod: any; isAdmin: any; isUser: any; username: any; }[] | undefined;
   isAdmin = false;
   isMod = false;
   isLoggedIn = false;
   username?: string;
   userid?: any;
-
-  RoleEnum = Role;
 
   constructor(private userService: UserService,
               private tokenStorageService: TokenStorageService) {
@@ -33,13 +33,21 @@ export class UsersComponent implements OnInit {
       this.userid = user.id;
       this.isAdmin = user.roles.includes('ROLE_ADMIN');
 
-      this.userService.getAll().subscribe(res => {
-        this.user = res;
-        console.log(this.user);
-
-      });
+      const tmp: { isMod: any; isAdmin: any; isUser: any; username: any; }[] | null | undefined = [];
+      const all = this.userService.getAll().pipe(
+        mergeMap(res => res),
+        map(u => {
+          const isAdmin = u.roles?.some(e => e.name === 'admin');
+          const isMod = u.roles?.some(e => e.name === 'moderator');
+          const isUser = u.roles?.some(e => e.name === 'user');
+          return {username: u.username, isAdmin, isMod, isUser};
+        }));
+      all.subscribe(data => {
+          tmp.push(data);
+          this.users = tmp;
+          console.log(data);
+        }
+      );
     }
-
   }
-
 }

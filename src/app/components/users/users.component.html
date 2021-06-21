@@ -1,27 +1,28 @@
 <div *ngIf="isAdmin">
   <h2 class="mt-4">Mitgliederliste</h2>
-  <div class="list-group-item list-group-item-action" *ngFor="let user of user">
+  <div class="list-group-item list-group-item-action" *ngFor="let user of users">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">{{user.username}}</h5>
-      <small>s</small>
     </div>
-    <div>
-      <label class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input">
-        {{RoleEnum.ADMIN}}
-      </label>
-    </div>
-    <div>
-      <label class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input">
-        {{RoleEnum.MOD}}
-      </label>
-    </div>
-    <div>
-      <label class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input">
-        {{RoleEnum.USER}}
-      </label>
-    </div>
+    <ng-container *ngIf="user.username !== 'admin'">
+      <div>
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" disabled [(ngModel)]="user.isAdmin"
+                 [ngModelOptions]="{standalone: true}"> Administrator
+        </label>
+      </div>
+      <div>
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" disabled [(ngModel)]="user.isMod"
+                 [ngModelOptions]="{standalone: true}"> Moderator
+        </label>
+      </div>
+      <div>
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" disabled [(ngModel)]="user.isUser"
+                 [ngModelOptions]="{standalone: true}"> User
+        </label>
+      </div>
+    </ng-container>
   </div>
 </div>
