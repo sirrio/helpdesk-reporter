@@ -1,12 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {combineAll, count, filter, groupBy, map, merge, mergeMap, reduce, shareReplay, toArray, zipAll} from 'rxjs/operators';
+import {count, groupBy, map, mergeMap} from 'rxjs/operators';
 import {Attendance} from '../../models/attendance.model';
 import {AttendanceService} from '../../services/attendance.service';
 import {UserService} from '../../services/user.service';
 import {TokenStorageService} from '../../services/token-storage.service';
 import {DatePipe} from '@angular/common';
-import {combineLatest, forkJoin, Observable, of, pipe, zip} from 'rxjs';
-import {fromArray} from 'rxjs/internal/observable/fromArray';
+import {forkJoin} from 'rxjs';
 
 
 @Component({
@@ -25,11 +24,11 @@ export class StatisticsComponent implements OnInit {
   userid?: any;
 
   dailyChartData ?: { name: string | undefined; value: number }[] = [];
+  pieChartTypeData: { name: string | undefined; value: number }[] = [];
+  pieChartFacultyData: { name: string | undefined; value: number }[] = [];
+  pieChartDegreeCourseData: { name: string | undefined; value: number }[] = [];
+
   view: [number, number] = [800, 600];
-
-  pieChartData: { name: string | undefined; value: number }[] = [];
-
-  // options
   showXAxis = true;
   showYAxis = true;
   gradient = false;
@@ -38,9 +37,8 @@ export class StatisticsComponent implements OnInit {
   xAxisLabel = 'Besucher';
   showYAxisLabel = false;
   yAxisLabel = 'Datum';
-
-  // options
   showLabels = true;
+  labelTrimmed = false;
   isDoughnut = false;
 
   colorSchemeBar = {
@@ -49,13 +47,34 @@ export class StatisticsComponent implements OnInit {
   };
 
   colorSchemePie = {
-    domain: ['#FAB9A0',
-      '#66A9FA',
-      '#E2BEF0',
-      '#16ABE0',
-      '#FAA929',
-      '#BBE68C',
-      '#E0CDB4']
+    domain: [
+      '#00876c',
+      '#4f9773',
+      '#79a67f',
+      '#9cb58f',
+      '#bbc5a5',
+      '#d6d6be',
+      '#ece8db',
+      '#e4d2b5',
+      '#e0ba93',
+      '#de9f76',
+      '#dc8361',
+      '#d96355',
+      '#d43d51',
+      '#645555',
+      '#7e6365',
+      '#997072',
+      '#b47e8d',
+      '#ce8da4',
+      '#e79cbf',
+      '#ffacdc',
+      '#d993be',
+      '#b57ba1',
+      '#926385',
+      '#714c68',
+      '#52374d',
+      '#352233'
+    ]
   };
 
 
@@ -83,8 +102,7 @@ export class StatisticsComponent implements OnInit {
 
   retrieveAttendance(): void {
     if (this.isAdmin) {
-      const tmp: { name: string | undefined; value: number; }[] | null | undefined = [];
-      const tmp2: { name: string | undefined; value: number; }[] | null | undefined = [];
+      const tmpType: { name: string | undefined; value: number; }[] | null | undefined = [];
       this.attendanceService.getAll().pipe(
         mergeMap(key => key),
         groupBy(attendance => attendance.date),
@@ -94,9 +112,36 @@ export class StatisticsComponent implements OnInit {
             ({name: this.getWeekday(group.key) + ' ' + this.formatDate(group.key), value: countvalue})));
         }))
         .subscribe(d => {
-            console.log(d);
-            tmp.push(d);
-            this.dailyChartData = tmp;
+            tmpType.push(d);
+            this.dailyChartData = tmpType;
+          }
+        );
+      const tmpFaculty: { name: string | undefined; value: number; }[] | null | undefined = [];
+      this.attendanceService.getAll().pipe(
+        mergeMap(key => key),
+        groupBy(attendance => attendance.faculty),
+        mergeMap(group => {
+          const groupcount = group.pipe(count());
+          return groupcount.pipe(map(countvalue =>
+            ({name: group.key, value: countvalue})));
+        }))
+        .subscribe(d => {
+            tmpFaculty.push(d);
+            this.pieChartFacultyData = tmpFaculty;
+          }
+        );
+      const tmpDegreeCourse: { name: string | undefined; value: number; }[] | null | undefined = [];
+      this.attendanceService.getAll().pipe(
+        mergeMap(key => key),
+        groupBy(attendance => attendance.degreeCourse),
+        mergeMap(group => {
+          const groupcount = group.pipe(count());
+          return groupcount.pipe(map(countvalue =>
+            ({name: group.key, value: countvalue})));
+        }))
+        .subscribe(d => {
+            tmpDegreeCourse.push(d);
+            this.pieChartDegreeCourseData = tmpDegreeCourse;
           }
         );
       const mb = this.attendanceService.getAll().pipe(
@@ -136,22 +181,10 @@ export class StatisticsComponent implements OnInit {
         }));
       forkJoin([mb, ml, mh, prog, ph, chem, org]).subscribe(data => {
           console.log(data);
-          this.pieChartData = data;
+          this.pieChartTypeData = data;
         }
       );
     }
-  }
-
-  onSelect(event: any): void {
-    // console.log(event);
-  }
-
-  onActivate(data: any): void {
-    // console.log('Activate', JSON.parse(JSON.stringify(data)));
-  }
-
-  onDeactivate(data: any): void {
-    // console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }
 
   formatDate(input?: string): string {
