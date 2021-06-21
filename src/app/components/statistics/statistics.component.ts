@@ -29,7 +29,6 @@ export class StatisticsComponent implements OnInit {
   pieChartDegreeCourseData: { name: string | undefined; value: number }[] = [];
   pieChartTutorData: { name: string | undefined; value: number }[] = [];
 
-  view: [number, number] = [800, 600];
   showXAxis = true;
   showYAxis = true;
   gradient = false;
@@ -39,42 +38,29 @@ export class StatisticsComponent implements OnInit {
   showYAxisLabel = false;
   yAxisLabel = 'Datum';
   showLabels = true;
-  labelTrimmed = false;
-  isDoughnut = false;
 
   colorSchemeBar = {
-    domain: ['#00876c',
-      '#d43d51']
+    domain: [
+      '#00876c',
+      '#bfce9e',
+    ]
   };
 
   colorSchemePie = {
     domain: [
       '#00876c',
-      '#4f9773',
-      '#79a67f',
-      '#9cb58f',
-      '#bbc5a5',
-      '#d6d6be',
-      '#ece8db',
-      '#e4d2b5',
-      '#e0ba93',
-      '#de9f76',
-      '#dc8361',
-      '#d96355',
+      '#4c9973',
+      '#76ab7e',
+      '#9bbd8c',
+      '#bfce9e',
+      '#e0e1b4',
+      '#fff3cd',
+      '#f6daaa',
+      '#f0bf8b',
+      '#eba271',
+      '#e5845f',
+      '#de6355',
       '#d43d51',
-      '#645555',
-      '#7e6365',
-      '#997072',
-      '#b47e8d',
-      '#ce8da4',
-      '#e79cbf',
-      '#ffacdc',
-      '#d993be',
-      '#b57ba1',
-      '#926385',
-      '#714c68',
-      '#52374d',
-      '#352233'
     ]
   };
 
@@ -155,44 +141,44 @@ export class StatisticsComponent implements OnInit {
             ({name: group.key, value: countvalue})));
         }))
         .subscribe(data => {
-          tmpTutor.push(data);
-          this.pieChartTutorData = tmpTutor;
+            tmpTutor.push(data);
+            this.pieChartTutorData = tmpTutor;
           }
         );
       const mb = this.attendanceService.getAll().pipe(
         map(res => {
           const mathBasicCount = res.filter(attendance => attendance.mathBasic === true).length;
-          return {name: 'mathBasic', value: mathBasicCount};
+          return {name: 'Mathe Schulwissen', value: mathBasicCount};
         }));
       const ml = this.attendanceService.getAll().pipe(
         map(res => {
           const mathLowCount = res.filter(attendance => attendance.mathLow === true).length;
-          return {name: 'mathLow', value: mathLowCount};
+          return {name: 'Mathe 1 u. 2 Sem', value: mathLowCount};
         }));
       const mh = this.attendanceService.getAll().pipe(
         map(res => {
           const mathHighCount = res.filter(attendance => attendance.mathHigh === true).length;
-          return {name: 'mathHigh', value: mathHighCount};
+          return {name: 'Mathe 3+ Sem', value: mathHighCount};
         }));
       const prog = this.attendanceService.getAll().pipe(
         map(res => {
           const programmingCount = res.filter(attendance => attendance.programming === true).length;
-          return {name: 'programming', value: programmingCount};
+          return {name: 'Programmierung', value: programmingCount};
         }));
       const ph = this.attendanceService.getAll().pipe(
         map(res => {
           const physicsCount = res.filter(attendance => attendance.physics === true).length;
-          return {name: 'physics', value: physicsCount};
+          return {name: 'Physic', value: physicsCount};
         }));
       const chem = this.attendanceService.getAll().pipe(
         map(res => {
           const chemistryCount = res.filter(attendance => attendance.chemistry === true).length;
-          return {name: 'chemistry', value: chemistryCount};
+          return {name: 'Chemie', value: chemistryCount};
         }));
       const org = this.attendanceService.getAll().pipe(
         map(res => {
           const organizationalCount = res.filter(attendance => attendance.organizational === true).length;
-          return {name: 'organizational', value: organizationalCount};
+          return {name: 'Organisatorisches', value: organizationalCount};
         }));
       forkJoin([mb, ml, mh, prog, ph, chem, org]).subscribe(data => {
           console.log(data);

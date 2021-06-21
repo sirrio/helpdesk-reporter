@@ -3,92 +3,78 @@
   <div class="card mt-4">
     <div class="card-body">
       <h4 class="card-title ">Besucher Übersicht</h4>
-      <ngx-charts-bar-horizontal
-        [view]="view"
-        [scheme]="colorSchemeBar"
-        [results]="dailyChartData"
-        [gradient]="gradient"
-        [xAxis]="showXAxis"
-        [yAxis]="showYAxis"
-        [legend]="showLegend"
-        [showXAxisLabel]="showXAxisLabel"
-        [showYAxisLabel]="showYAxisLabel"
-        [xAxisLabel]="xAxisLabel"
-        [yAxisLabel]="yAxisLabel"
-      >
-      </ngx-charts-bar-horizontal>
-
+      <div #ContainerRef>
+        <ngx-charts-bar-horizontal
+          [view]="[ContainerRef.offsetWidth, 800]"
+          [scheme]="colorSchemeBar"
+          [results]="dailyChartData"
+          [gradient]="gradient"
+          [xAxis]="showXAxis"
+          [yAxis]="showYAxis"
+          [legend]="showLegend"
+          [showXAxisLabel]="showXAxisLabel"
+          [showYAxisLabel]="showYAxisLabel"
+          [xAxisLabel]="xAxisLabel"
+          [yAxisLabel]="yAxisLabel"
+        >
+        </ngx-charts-bar-horizontal>
+      </div>
     </div>
   </div>
   <div class="card mt-4">
     <div class="card-body">
       <h4 class="card-title">Verteilung Fragenthemen</h4>
-      <div style="padding-left: 10%">
-        <ngx-charts-pie-chart
-          [view]="view"
+      <div #ContainerRef>
+        <ngx-charts-advanced-pie-chart
+          [view]="[ContainerRef.offsetWidth, 400]"
           [scheme]="colorSchemePie"
           [results]="pieChartTypeData"
-          [trimLabels]="labelTrimmed"
           [gradient]="gradient"
-          [legend]="showLegend"
-          [labels]="showLabels"
-          [doughnut]="isDoughnut"
         >
-        </ngx-charts-pie-chart>
+        </ngx-charts-advanced-pie-chart>
       </div>
     </div>
   </div>
   <div class="card mt-4">
     <div class="card-body">
       <h4 class="card-title">Verteilung Studiengänge</h4>
-      <div style="padding-left: 10%">
-        <ngx-charts-pie-chart
-          [view]="view"
+      <div #ContainerRef>
+        <ngx-charts-advanced-pie-chart
+          [view]="[ContainerRef.offsetWidth, 400]"
           [scheme]="colorSchemePie"
           [results]="pieChartDegreeCourseData"
-          [trimLabels]="labelTrimmed"
           [gradient]="gradient"
-          [legend]="showLegend"
-          [labels]="showLabels"
-          [doughnut]="isDoughnut"
         >
-        </ngx-charts-pie-chart>
+        </ngx-charts-advanced-pie-chart>
       </div>
     </div>
   </div>
   <div class="card mt-4">
     <div class="card-body">
       <h4 class="card-title">Verteilung Fachbereiche</h4>
-      <div style="padding-left: 10%">
-        <ngx-charts-pie-chart
-          [view]="view"
+      <div #ContainerRef>
+        <ngx-charts-advanced-pie-chart
+          [view]="[ContainerRef.offsetWidth, 400]"
           [scheme]="colorSchemePie"
           [results]="pieChartFacultyData"
-          [trimLabels]="labelTrimmed"
           [gradient]="gradient"
-          [legend]="showLegend"
-          [labels]="showLabels"
-          [doughnut]="isDoughnut"
         >
-        </ngx-charts-pie-chart>
+        </ngx-charts-advanced-pie-chart>
       </div>
     </div>
     <div class="card mt-4">
       <div class="card-body">
         <h4 class="card-title">Verteilung Tutoren</h4>
-        <div style="padding-left: 10%">
-          <ngx-charts-pie-chart
-            [view]="view"
+        <div #ContainerRef>
+          <ngx-charts-advanced-pie-chart
+            [view]="[ContainerRef.offsetWidth, 400]"
             [scheme]="colorSchemePie"
             [results]="pieChartTutorData"
-            [trimLabels]="labelTrimmed"
             [gradient]="gradient"
-            [legend]="showLegend"
-            [labels]="showLabels"
-            [doughnut]="isDoughnut"
           >
-          </ngx-charts-pie-chart>
+          </ngx-charts-advanced-pie-chart>
         </div>
       </div>
     </div>
+  </div>
 </div>
