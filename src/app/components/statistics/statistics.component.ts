@@ -27,6 +27,7 @@ export class StatisticsComponent implements OnInit {
   pieChartTypeData: { name: string | undefined; value: number }[] = [];
   pieChartFacultyData: { name: string | undefined; value: number }[] = [];
   pieChartDegreeCourseData: { name: string | undefined; value: number }[] = [];
+  pieChartTutorData: { name: string | undefined; value: number }[] = [];
 
   view: [number, number] = [800, 600];
   showXAxis = true;
@@ -42,8 +43,8 @@ export class StatisticsComponent implements OnInit {
   isDoughnut = false;
 
   colorSchemeBar = {
-    domain: ['#66A9FA',
-      '#FAA929']
+    domain: ['#00876c',
+      '#d43d51']
   };
 
   colorSchemePie = {
@@ -111,8 +112,8 @@ export class StatisticsComponent implements OnInit {
           return groupcount.pipe(map(countvalue =>
             ({name: this.getWeekday(group.key) + ' ' + this.formatDate(group.key), value: countvalue})));
         }))
-        .subscribe(d => {
-            tmpType.push(d);
+        .subscribe(data => {
+            tmpType.push(data);
             this.dailyChartData = tmpType;
           }
         );
@@ -125,8 +126,8 @@ export class StatisticsComponent implements OnInit {
           return groupcount.pipe(map(countvalue =>
             ({name: group.key, value: countvalue})));
         }))
-        .subscribe(d => {
-            tmpFaculty.push(d);
+        .subscribe(data => {
+            tmpFaculty.push(data);
             this.pieChartFacultyData = tmpFaculty;
           }
         );
@@ -139,9 +140,23 @@ export class StatisticsComponent implements OnInit {
           return groupcount.pipe(map(countvalue =>
             ({name: group.key, value: countvalue})));
         }))
-        .subscribe(d => {
-            tmpDegreeCourse.push(d);
+        .subscribe(data => {
+            tmpDegreeCourse.push(data);
             this.pieChartDegreeCourseData = tmpDegreeCourse;
+          }
+        );
+      const tmpTutor: { name: string | undefined; value: number; }[] | null | undefined = [];
+      this.attendanceService.getAll().pipe(
+        mergeMap(key => key),
+        groupBy(attendance => attendance.tutor.username),
+        mergeMap(group => {
+          const groupcount = group.pipe(count());
+          return groupcount.pipe(map(countvalue =>
+            ({name: group.key, value: countvalue})));
+        }))
+        .subscribe(data => {
+          tmpTutor.push(data);
+          this.pieChartTutorData = tmpTutor;
           }
         );
       const mb = this.attendanceService.getAll().pipe(

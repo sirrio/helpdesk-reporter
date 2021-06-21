@@ -72,5 +72,22 @@
         </ngx-charts-pie-chart>
       </div>
     </div>
-  </div>
+    <div class="card mt-4">
+      <div class="card-body">
+        <h4 class="card-title">Verteilung Tutoren</h4>
+        <div style="padding-left: 10%">
+          <ngx-charts-pie-chart
+            [view]="view"
+            [scheme]="colorSchemePie"
+            [results]="pieChartTutorData"
+            [trimLabels]="labelTrimmed"
+            [gradient]="gradient"
+            [legend]="showLegend"
+            [labels]="showLabels"
+            [doughnut]="isDoughnut"
+          >
+          </ngx-charts-pie-chart>
+        </div>
+      </div>
+    </div>
 </div>
