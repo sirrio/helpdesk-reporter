@@ -41,26 +41,25 @@ export class StatisticsComponent implements OnInit {
 
   colorSchemeBar = {
     domain: [
-      '#00876c',
-      '#bfce9e',
+      '#a93226',
+      '#2980b9',
     ]
   };
 
   colorSchemePie = {
     domain: [
-      '#00876c',
-      '#4c9973',
-      '#76ab7e',
-      '#9bbd8c',
-      '#bfce9e',
-      '#e0e1b4',
-      '#fff3cd',
-      '#f6daaa',
-      '#f0bf8b',
-      '#eba271',
-      '#e5845f',
-      '#de6355',
-      '#d43d51',
+      '#a93226',
+      '#2980b9',
+      '#e74c3c',
+      '#3498db',
+      '#9b59b6',
+      '#1abc9c',
+      '#a569bd',
+      '#16a085',
+      '#f1c40f',
+      '#d35400',
+      '#d0d3d4',
+      '#2e4053',
     ]
   };
 

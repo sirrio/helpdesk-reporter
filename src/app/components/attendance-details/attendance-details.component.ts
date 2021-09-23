@@ -32,6 +32,8 @@ export class AttendanceDetailsComponent implements OnInit {
     organizational: false,
   };
 
+  semester: string[] = ['SS21', 'WS2122'];
+
   constructor(
     private attendanceService: AttendanceService,
     private tokenStorageService: TokenStorageService,

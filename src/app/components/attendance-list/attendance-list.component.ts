@@ -21,7 +21,7 @@ export class AttendanceListComponent implements OnInit {
   username?: string;
   userid?: any;
   tmpAttendance: Attendance = {
-    semester: 'SS21',
+    semester: 'WS2122',
     date: this.datepipe.transform(new Date(), 'yyyy-MM-dd') || '1970-01-01',
     startTime: '10:00',
     endTime: '12:00',
@@ -36,6 +36,9 @@ export class AttendanceListComponent implements OnInit {
     organizational: false,
     tutor: 0
   };
+
+  semester: string[] = ['WS2122', 'SS21'];
+  currentSemester = 'WS2122';
 
   constructor(
     private attendanceService: AttendanceService,
@@ -61,7 +64,7 @@ export class AttendanceListComponent implements OnInit {
 
   retrieveAttendance(): void {
     this.AttendancesByDate = [];
-    if (this.isAdmin) {
+    if (this.isAdmin && this.currentSemester === 'all') {
       this.attendanceService.getAll()
         .pipe(
           mergeMap(res => res),
@@ -71,8 +74,28 @@ export class AttendanceListComponent implements OnInit {
         this.AttendancesByDate?.push(data);
       });
     }
-    if (!this.isAdmin ?? this.isMod) {
+    if (this.isAdmin && this.currentSemester !== 'all') {
+      this.attendanceService.getAllBySemester(this.currentSemester)
+        .pipe(
+          mergeMap(res => res),
+          groupBy(attendance => attendance.date),
+          mergeMap(group => group.pipe(toArray()))
+        ).subscribe(data => {
+        this.AttendancesByDate?.push(data);
+      });
+    }
+    if (!this.isAdmin && this.isMod && this.currentSemester === 'all') {
       this.attendanceService.getAllByUser(this.userid)
+        .pipe(
+          mergeMap(res => res),
+          groupBy(attendance => attendance.date),
+          mergeMap(group => group.pipe(toArray()))
+        ).subscribe(data => {
+        this.AttendancesByDate?.push(data);
+      });
+    }
+    if (!this.isAdmin && this.isMod && this.currentSemester !== 'all') {
+      this.attendanceService.getAllByUserAndSemester(this.userid, this.currentSemester)
         .pipe(
           mergeMap(res => res),
           groupBy(attendance => attendance.date),
@@ -84,20 +107,65 @@ export class AttendanceListComponent implements OnInit {
   }
 
   downloadFile(data: any): void {
-    console.log(data);
-    const replacer = (key: any, value: null) => value === null ? '' : value; // specify how you want to handle null values here
-    const header = Object.keys(data[0]);
-    const csv = data.map((row: { [x: string]: any; }) => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
-    csv.unshift(header.join(','));
-    const csvArray = csv.join('\r\n');
+    const nullReplacer = (key: any, value: null) => value === null ? '' : value;
 
-    const blob = new Blob([csvArray], {type: 'text/csv'});
+    const csv = [];
+    let tmp = [];
+    tmp.push(
+      'Wochentag',
+      'Datum',
+      'von',
+      'bis',
+      'Studiengang',
+      'Fachrichtung',
+      'Mathe Grundlagen aus Schule',
+      'Mathe 1. oder 2. Semester',
+      'Mathe ab 3. Semester',
+      'Programmieren',
+      'Physik',
+      'Chemie',
+      'Orgranisatoisches',
+      'Tutor'
+    );
+    csv.push(tmp.join(';'));
+    for (const d of data) {
+      for (const x of d) {
+        tmp = [];
+        const attendance: Attendance = x;
+        tmp.push(
+          this.getWeekday(attendance.date),
+          attendance.date,
+          attendance.startTime,
+          attendance.endTime,
+          attendance.degreeCourse,
+          attendance.faculty,
+          this.mark(attendance.mathBasic),
+          this.mark(attendance.mathLow),
+          this.mark(attendance.mathHigh),
+          this.mark(attendance.programming),
+          this.mark(attendance.physics),
+          this.mark(attendance.chemistry),
+          this.mark(attendance.organizational),
+          attendance.tutor.username
+        );
+        csv.push(tmp.join(';'));
+      }
+    }
+    console.log(csv);
+    const blob = new Blob([csv.join('\r\n')], {type: 'text/csv'});
     saveAs(blob, 'myFile.csv');
+  }
+
+  mark(b: boolean | undefined): string {
+    if (b) {
+      return 'x';
+    }
+    return ' ';
   }
 
   saveAttendance(): void {
     const data = {
-      semester: 'SS21',
+      semester: this.tmpAttendance.semester,
       date: this.tmpAttendance.date,
       startTime: this.tmpAttendance.startTime,
       endTime: this.tmpAttendance.endTime,
@@ -122,6 +190,10 @@ export class AttendanceListComponent implements OnInit {
         error => {
           console.log(error);
         });
+  }
+
+  semesterChange(): void {
+    this.retrieveAttendance();
   }
 
   formatDate(input?: string): string {

@@ -22,8 +22,16 @@ export class AttendanceService {
     return this.http.get<Attendance[]>(API_URL);
   }
 
+  getAllBySemester(semester: any): Observable<Attendance[]> {
+    return this.http.get<Attendance[]>(`${API_URL}/s/${semester}`);
+  }
+
   getAllByUser(user: any): Observable<Attendance[]> {
     return this.http.get<Attendance[]>(`${API_URL}/u/${user}`);
+  }
+
+  getAllByUserAndSemester(user: any, semester: any): Observable<Attendance[]> {
+    return this.http.get<Attendance[]>(`${API_URL}/u/${user}/s/${semester}`);
   }
 
   get(id: any): Observable<Attendance> {

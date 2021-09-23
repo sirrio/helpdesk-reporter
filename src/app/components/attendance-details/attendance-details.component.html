@@ -17,6 +17,13 @@
       <input type="time" id="inputEndTime" name="inputEndTime" aria-label="" class="form-control"
              [(ngModel)]="currentAttendance.endTime">
     </div>
+    <div class="col-2">
+      <label for="inputSemester">Semester</label>
+      <select type="time" id="inputSemester" name="inputSemester" aria-label="" class="form-select"
+              [(ngModel)]="currentAttendance.semester">
+        <option *ngFor="let s of semester" [ngValue]="s">{{s}}</option>
+      </select>
+    </div>
   </div>
   <div class="row mt-2">
     <div class="col">

@@ -19,6 +19,13 @@
         <input type="time" id="inputEndTime" name="inputEndTime" aria-label="" class="form-control"
                [(ngModel)]="tmpAttendance.endTime">
       </div>
+      <div class="col-2">
+        <label for="inputSemester">Semester</label>
+        <select type="time" id="inputSemester" name="inputSemester" aria-label="" class="form-select"
+                [(ngModel)]="tmpAttendance.semester">
+          <option *ngFor="let s of semester" [ngValue]="s">{{s}}</option>
+        </select>
+      </div>
     </div>
     <div class="row mt-2">
       <div class="col">
@@ -123,10 +130,19 @@
       </div>
     </div>
   </form>
-  <div class>
+  <div>
     <h2 class="mt-4">Alle Einträge</h2>
-    <div class=" mt-2 mb-3">
-      <button (click)="downloadFile(AttendancesByDate)" class="btn btn-success mx-auto">Download</button>
+    <div class="row">
+      <div class=" mt-2 mb-3 col">
+        <button (click)="downloadFile(AttendancesByDate)" class="btn btn-success mx-auto">Download</button>
+      </div>
+      <div class="col-2">
+        <select type="time" id="selectSemester" name="selectSemester" aria-label="" class="form-select"
+                [(ngModel)]="currentSemester" (ngModelChange)="semesterChange()">
+          <option value="all">Alle</option>
+          <option *ngFor="let s of semester" [ngValue]="s">{{s}}</option>
+        </select>
+      </div>
     </div>
   </div>
   <div class="list-group mb-4" *ngFor="let attendances of AttendancesByDate; let i = index">
@@ -137,7 +153,10 @@
        aria-current="true" *ngFor="let attendance of attendances">
       <div class="d-flex w-100 justify-content-between">
         <h5 class="mb-1">{{attendance.startTime}} - {{attendance.endTime}}</h5>
-        <small>{{attendance.tutor.username}}</small>
+        <div>
+          <small class="mx-3">{{attendance.tutor.username}}</small>
+          <small>{{attendance.semester}}</small>
+        </div>
       </div>
       <p class="mb-1">{{attendance.degreeCourse}} - {{attendance.faculty}}</p>
       <small class="mr-1" *ngIf="attendance.mathBasic">&#9746; Mathe Schulwissen</small>
