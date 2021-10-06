@@ -1,23 +1,40 @@
-<h2 class="mt-4">Statistiken</h2>
+<div class="row">
+  <div class="col-10">
+    <h2 class="mt-4">Statistiken</h2>
+  </div>
+  <div class="col-2">
+    <select type="time" id="selectSemester" name="selectSemester" aria-label="" class="form-select mt-4"
+            [(ngModel)]="currentSemester" (ngModelChange)="semesterChange()">
+      <option value="all">Alle</option>
+      <option *ngFor="let s of semester" [ngValue]="s">{{s}}</option>
+    </select>
+  </div>
+</div>
 <div class="container">
   <div class="card mt-4">
     <div class="card-body">
       <h4 class="card-title ">Besucher Übersicht</h4>
       <div #ContainerRef>
-        <ngx-charts-bar-horizontal
-          [view]="[ContainerRef.offsetWidth, 800]"
+        <ngx-charts-bar-horizontal-2d
+          [view]="[ContainerRef.offsetWidth, statsHeight]"
           [scheme]="colorSchemeBar"
           [results]="dailyChartData"
           [gradient]="gradient"
+          [showDataLabel]="showLabels"
+          [legend]="showLegend"
           [xAxis]="showXAxis"
           [yAxis]="showYAxis"
-          [legend]="showLegend"
+          [noBarWhenZero]="noBarWhenZero"
           [showXAxisLabel]="showXAxisLabel"
           [showYAxisLabel]="showYAxisLabel"
           [xAxisLabel]="xAxisLabel"
           [yAxisLabel]="yAxisLabel"
+          [groupPadding]="32"
         >
-        </ngx-charts-bar-horizontal>
+          <ng-template #tooltipTemplate let-model="model">
+            <h4>{{ model.name }} {{ model.extra.date }}</h4>
+          </ng-template>
+        </ngx-charts-bar-horizontal-2d>
       </div>
     </div>
   </div>
@@ -62,19 +79,19 @@
         </ngx-charts-advanced-pie-chart>
       </div>
     </div>
-<!--    <div class="card mt-4">-->
-<!--      <div class="card-body">-->
-<!--        <h4 class="card-title">Verteilung Tutoren</h4>-->
-<!--        <div #ContainerRef>-->
-<!--          <ngx-charts-advanced-pie-chart-->
-<!--            [view]="[ContainerRef.offsetWidth, 400]"-->
-<!--            [scheme]="colorSchemePie"-->
-<!--            [results]="pieChartTutorData"-->
-<!--            [gradient]="gradient"-->
-<!--          >-->
-<!--          </ngx-charts-advanced-pie-chart>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
+    <!--    <div class="card mt-4">-->
+    <!--      <div class="card-body">-->
+    <!--        <h4 class="card-title">Verteilung Tutoren</h4>-->
+    <!--        <div #ContainerRef>-->
+    <!--          <ngx-charts-advanced-pie-chart-->
+    <!--            [view]="[ContainerRef.offsetWidth, 400]"-->
+    <!--            [scheme]="colorSchemePie"-->
+    <!--            [results]="pieChartTutorData"-->
+    <!--            [gradient]="gradient"-->
+    <!--          >-->
+    <!--          </ngx-charts-advanced-pie-chart>-->
+    <!--        </div>-->
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
 </div>

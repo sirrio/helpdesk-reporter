@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {count, groupBy, map, mergeMap} from 'rxjs/operators';
+import {count, groupBy, map, mergeMap, reduce, toArray} from 'rxjs/operators';
 import {Attendance} from '../../models/attendance.model';
 import {AttendanceService} from '../../services/attendance.service';
 import {UserService} from '../../services/user.service';
 import {TokenStorageService} from '../../services/token-storage.service';
-import {DatePipe} from '@angular/common';
+import {DatePipe, formatDate} from '@angular/common';
 import {forkJoin} from 'rxjs';
 
 
@@ -23,26 +23,34 @@ export class StatisticsComponent implements OnInit {
   username?: string;
   userid?: any;
 
-  dailyChartData ?: { name: string | undefined; value: number }[] = [];
+  dailyChartData ?: any = [];
   pieChartTypeData: { name: string | undefined; value: number }[] = [];
   pieChartFacultyData: { name: string | undefined; value: number }[] = [];
   pieChartDegreeCourseData: { name: string | undefined; value: number }[] = [];
   pieChartTutorData: { name: string | undefined; value: number }[] = [];
 
-  showXAxis = true;
+  showXAxis = false;
   showYAxis = true;
   gradient = false;
-  showLegend = false;
+  showLegend = true;
   showXAxisLabel = true;
   xAxisLabel = 'Besucher';
   showYAxisLabel = false;
   yAxisLabel = 'Datum';
   showLabels = true;
+  noBarWhenZero = false;
+  statsHeight = 800;
+
+  semester: string[] = ['WS2122', 'SS21'];
+  currentSemester = 'WS2122';
 
   colorSchemeBar = {
     domain: [
       '#a93226',
-      '#2980b9',
+      '#2396e0',
+      '#ffb85b',
+      '#6ee141',
+      '#6f6d81',
     ]
   };
 
@@ -86,104 +94,275 @@ export class StatisticsComponent implements OnInit {
     }
   }
 
+  getWeekNumber(date: Date): number {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  }
+
+  semesterChange(): void {
+    this.retrieveAttendance();
+  }
+
   retrieveAttendance(): void {
-    if (this.isAdmin) {
-      const tmpType: { name: string | undefined; value: number; }[] | null | undefined = [];
-      this.attendanceService.getAll().pipe(
-        mergeMap(key => key),
-        groupBy(attendance => attendance.date),
-        mergeMap(group => {
-          const groupcount = group.pipe(count());
-          return groupcount.pipe(map(countvalue =>
-            ({name: this.getWeekday(group.key) + ' ' + this.formatDate(group.key), value: countvalue})));
-        }))
-        .subscribe(data => {
+    if (this.currentSemester !== 'all') {
+      if (this.isAdmin) {
+        const tmpType: any = [];
+        this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            mergeMap(key => {
+              return key;
+            }),
+            groupBy(attendance => attendance.date),
+            mergeMap(group => {
+              const groupcount = group.pipe(count());
+              return groupcount.pipe(map(countvalue => {
+                  const d = group.key || '1.1.1990';
+                  const wd = this.getWeekNumber(new Date(d));
+                  return ({
+                    weekday: `KW ${wd}`,
+                    name: this.getWeekday(group.key),
+                    value: countvalue,
+                    extra: {date: this.formatDate(group.key)}
+                  });
+                }
+              ));
+            }),
+            groupBy(Obj => Obj.weekday),
+            mergeMap(group => group.pipe(
+              reduce((acc: any, cur) => [...acc, cur], [`${group.key}`])
+            )),
+            map(arr => ({name: arr[0], series: arr.slice(1)}))
+          ).subscribe(data => {
             tmpType.push(data);
+            console.log(data);
+
             this.dailyChartData = tmpType;
+            this.statsHeight = this.dailyChartData.length * 150;
           }
         );
-      const tmpFaculty: { name: string | undefined; value: number; }[] | null | undefined = [];
-      this.attendanceService.getAll().pipe(
-        mergeMap(key => key),
-        groupBy(attendance => attendance.faculty),
-        mergeMap(group => {
-          const groupcount = group.pipe(count());
-          return groupcount.pipe(map(countvalue =>
-            ({name: group.key, value: countvalue})));
-        }))
-        .subscribe(data => {
-            tmpFaculty.push(data);
-            this.pieChartFacultyData = tmpFaculty;
+        const tmpFaculty: { name: string | undefined; value: number; }[] | null | undefined = [];
+        this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            mergeMap(key => key),
+            groupBy(attendance => attendance.faculty),
+            mergeMap(group => {
+              const groupcount = group.pipe(count());
+              return groupcount.pipe(map(countvalue =>
+                ({name: group.key, value: countvalue})));
+            }))
+          .subscribe(data => {
+              tmpFaculty.push(data);
+              this.pieChartFacultyData = tmpFaculty;
+            }
+          );
+        const tmpDegreeCourse: { name: string | undefined; value: number; }[] | null | undefined = [];
+        this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            mergeMap(key => key),
+            groupBy(attendance => attendance.degreeCourse),
+            mergeMap(group => {
+              const groupcount = group.pipe(count());
+              return groupcount.pipe(map(countvalue =>
+                ({name: group.key, value: countvalue})));
+            }))
+          .subscribe(data => {
+              tmpDegreeCourse.push(data);
+              this.pieChartDegreeCourseData = tmpDegreeCourse;
+            }
+          );
+        const tmpTutor: { name: string | undefined; value: number; }[] | null | undefined = [];
+        this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            mergeMap(key => key),
+            groupBy(attendance => attendance.tutor.username),
+            mergeMap(group => {
+              const groupcount = group.pipe(count());
+              return groupcount.pipe(map(countvalue =>
+                ({name: group.key, value: countvalue})));
+            }))
+          .subscribe(data => {
+              tmpTutor.push(data);
+              this.pieChartTutorData = tmpTutor;
+            }
+          );
+        const mb = this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            map(res => {
+              const mathBasicCount = res.filter(attendance => attendance.mathBasic === true).length;
+              return {name: 'Mathe Schulwissen', value: mathBasicCount};
+            }));
+        const ml = this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            map(res => {
+              const mathLowCount = res.filter(attendance => attendance.mathLow === true).length;
+              return {name: 'Mathe 1 u. 2 Sem', value: mathLowCount};
+            }));
+        const mh = this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            map(res => {
+              const mathHighCount = res.filter(attendance => attendance.mathHigh === true).length;
+              return {name: 'Mathe 3+ Sem', value: mathHighCount};
+            }));
+        const prog = this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            map(res => {
+              const programmingCount = res.filter(attendance => attendance.programming === true).length;
+              return {name: 'Programmierung', value: programmingCount};
+            }));
+        const ph = this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            map(res => {
+              const physicsCount = res.filter(attendance => attendance.physics === true).length;
+              return {name: 'Physic', value: physicsCount};
+            }));
+        const chem = this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            map(res => {
+              const chemistryCount = res.filter(attendance => attendance.chemistry === true).length;
+              return {name: 'Chemie', value: chemistryCount};
+            }));
+        const org = this.attendanceService.getAllBySemester(this.currentSemester)
+          .pipe(
+            map(res => {
+              const organizationalCount = res.filter(attendance => attendance.organizational === true).length;
+              return {name: 'Organisatorisches', value: organizationalCount};
+            }));
+        forkJoin([mb, ml, mh, prog, ph, chem, org]).subscribe(data => {
+            this.pieChartTypeData = data;
           }
         );
-      const tmpDegreeCourse: { name: string | undefined; value: number; }[] | null | undefined = [];
-      this.attendanceService.getAll().pipe(
-        mergeMap(key => key),
-        groupBy(attendance => attendance.degreeCourse),
-        mergeMap(group => {
-          const groupcount = group.pipe(count());
-          return groupcount.pipe(map(countvalue =>
-            ({name: group.key, value: countvalue})));
-        }))
-        .subscribe(data => {
-            tmpDegreeCourse.push(data);
-            this.pieChartDegreeCourseData = tmpDegreeCourse;
+      }
+    } else {
+      if (this.isAdmin) {
+        const tmpType: any = [];
+        this.attendanceService.getAll()
+          .pipe(
+            mergeMap(key => {
+              return key;
+            }),
+            groupBy(attendance => attendance.date),
+            mergeMap(group => {
+              const groupcount = group.pipe(count());
+              return groupcount.pipe(map(countvalue => {
+                  const d = group.key || '1.1.1990';
+                  const wd = this.getWeekNumber(new Date(d));
+                  return ({
+                    weekday: `KW ${wd}`,
+                    name: this.getWeekday(group.key),
+                    value: countvalue,
+                    extra: {date: this.formatDate(group.key)}
+                  });
+                }
+              ));
+            }),
+            groupBy(Obj => Obj.weekday),
+            mergeMap(group => group.pipe(
+              reduce((acc: any, cur) => [...acc, cur], [`${group.key}`])
+            )),
+            map(arr => ({name: arr[0], series: arr.slice(1)}))
+          ).subscribe(data => {
+            tmpType.push(data);
+            console.log(data);
+
+            this.dailyChartData = tmpType;
+            this.statsHeight = this.dailyChartData.length * 150;
           }
         );
-      const tmpTutor: { name: string | undefined; value: number; }[] | null | undefined = [];
-      this.attendanceService.getAll().pipe(
-        mergeMap(key => key),
-        groupBy(attendance => attendance.tutor.username),
-        mergeMap(group => {
-          const groupcount = group.pipe(count());
-          return groupcount.pipe(map(countvalue =>
-            ({name: group.key, value: countvalue})));
-        }))
-        .subscribe(data => {
-            tmpTutor.push(data);
-            this.pieChartTutorData = tmpTutor;
+        const tmpFaculty: { name: string | undefined; value: number; }[] | null | undefined = [];
+        this.attendanceService.getAll()
+          .pipe(
+            mergeMap(key => key),
+            groupBy(attendance => attendance.faculty),
+            mergeMap(group => {
+              const groupcount = group.pipe(count());
+              return groupcount.pipe(map(countvalue =>
+                ({name: group.key, value: countvalue})));
+            }))
+          .subscribe(data => {
+              tmpFaculty.push(data);
+              this.pieChartFacultyData = tmpFaculty;
+            }
+          );
+        const tmpDegreeCourse: { name: string | undefined; value: number; }[] | null | undefined = [];
+        this.attendanceService.getAll()
+          .pipe(
+            mergeMap(key => key),
+            groupBy(attendance => attendance.degreeCourse),
+            mergeMap(group => {
+              const groupcount = group.pipe(count());
+              return groupcount.pipe(map(countvalue =>
+                ({name: group.key, value: countvalue})));
+            }))
+          .subscribe(data => {
+              tmpDegreeCourse.push(data);
+              this.pieChartDegreeCourseData = tmpDegreeCourse;
+            }
+          );
+        const tmpTutor: { name: string | undefined; value: number; }[] | null | undefined = [];
+        this.attendanceService.getAll()
+          .pipe(
+            mergeMap(key => key),
+            groupBy(attendance => attendance.tutor.username),
+            mergeMap(group => {
+              const groupcount = group.pipe(count());
+              return groupcount.pipe(map(countvalue =>
+                ({name: group.key, value: countvalue})));
+            }))
+          .subscribe(data => {
+              tmpTutor.push(data);
+              this.pieChartTutorData = tmpTutor;
+            }
+          );
+        const mb = this.attendanceService.getAll()
+          .pipe(
+            map(res => {
+              const mathBasicCount = res.filter(attendance => attendance.mathBasic === true).length;
+              return {name: 'Mathe Schulwissen', value: mathBasicCount};
+            }));
+        const ml = this.attendanceService.getAll()
+          .pipe(
+            map(res => {
+              const mathLowCount = res.filter(attendance => attendance.mathLow === true).length;
+              return {name: 'Mathe 1 u. 2 Sem', value: mathLowCount};
+            }));
+        const mh = this.attendanceService.getAll()
+          .pipe(
+            map(res => {
+              const mathHighCount = res.filter(attendance => attendance.mathHigh === true).length;
+              return {name: 'Mathe 3+ Sem', value: mathHighCount};
+            }));
+        const prog = this.attendanceService.getAll()
+          .pipe(
+            map(res => {
+              const programmingCount = res.filter(attendance => attendance.programming === true).length;
+              return {name: 'Programmierung', value: programmingCount};
+            }));
+        const ph = this.attendanceService.getAll()
+          .pipe(
+            map(res => {
+              const physicsCount = res.filter(attendance => attendance.physics === true).length;
+              return {name: 'Physic', value: physicsCount};
+            }));
+        const chem = this.attendanceService.getAll()
+          .pipe(
+            map(res => {
+              const chemistryCount = res.filter(attendance => attendance.chemistry === true).length;
+              return {name: 'Chemie', value: chemistryCount};
+            }));
+        const org = this.attendanceService.getAll()
+          .pipe(
+            map(res => {
+              const organizationalCount = res.filter(attendance => attendance.organizational === true).length;
+              return {name: 'Organisatorisches', value: organizationalCount};
+            }));
+        forkJoin([mb, ml, mh, prog, ph, chem, org]).subscribe(data => {
+            this.pieChartTypeData = data;
           }
         );
-      const mb = this.attendanceService.getAll().pipe(
-        map(res => {
-          const mathBasicCount = res.filter(attendance => attendance.mathBasic === true).length;
-          return {name: 'Mathe Schulwissen', value: mathBasicCount};
-        }));
-      const ml = this.attendanceService.getAll().pipe(
-        map(res => {
-          const mathLowCount = res.filter(attendance => attendance.mathLow === true).length;
-          return {name: 'Mathe 1 u. 2 Sem', value: mathLowCount};
-        }));
-      const mh = this.attendanceService.getAll().pipe(
-        map(res => {
-          const mathHighCount = res.filter(attendance => attendance.mathHigh === true).length;
-          return {name: 'Mathe 3+ Sem', value: mathHighCount};
-        }));
-      const prog = this.attendanceService.getAll().pipe(
-        map(res => {
-          const programmingCount = res.filter(attendance => attendance.programming === true).length;
-          return {name: 'Programmierung', value: programmingCount};
-        }));
-      const ph = this.attendanceService.getAll().pipe(
-        map(res => {
-          const physicsCount = res.filter(attendance => attendance.physics === true).length;
-          return {name: 'Physic', value: physicsCount};
-        }));
-      const chem = this.attendanceService.getAll().pipe(
-        map(res => {
-          const chemistryCount = res.filter(attendance => attendance.chemistry === true).length;
-          return {name: 'Chemie', value: chemistryCount};
-        }));
-      const org = this.attendanceService.getAll().pipe(
-        map(res => {
-          const organizationalCount = res.filter(attendance => attendance.organizational === true).length;
-          return {name: 'Organisatorisches', value: organizationalCount};
-        }));
-      forkJoin([mb, ml, mh, prog, ph, chem, org]).subscribe(data => {
-          console.log(data);
-          this.pieChartTypeData = data;
-        }
-      );
+      }
     }
   }
 
