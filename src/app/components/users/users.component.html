@@ -1,28 +1,41 @@
 <div *ngIf="isAdmin">
   <h2 class="mt-4">Mitgliederliste</h2>
   <div class="list-group-item list-group-item-action" *ngFor="let user of users">
-    <div class="d-flex w-100 justify-content-between">
-      <h5 class="mb-1">{{user.username}}</h5>
+    <div class="container">
+      <div class="row">
+        <div class="col-4">
+          <h5 class="mb-1">{{user.username}}</h5>
+        </div>
+        <div class="col-1">
+        </div>
+        <div class="col-1 my-auto">
+          <span>Passwort:</span>
+        </div>
+        <div class="col-4">
+          <input class="form-control" type="password" minlength="6" required [(ngModel)]="user.pw">
+        </div>
+        <div class="col-2">
+            <button class="btn btn-success" (click)="updatePassword(user.id, user.pw)" >
+              Speichern
+            </button>
+        </div>
+      </div>
+      <ng-container *ngIf="user.username !== 'admin'">
+        <div>
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" [(ngModel)]="user.isAdmin"
+                   (click)="toggleRole(user.id, 'admin', user.isAdmin)"
+                   [ngModelOptions]="{standalone: true}"> Administrator
+          </label>
+        </div>
+        <div>
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" [(ngModel)]="user.isMod"
+                   (click)="toggleRole(user.id, 'moderator', user.isMod)"
+                   [ngModelOptions]="{standalone: true}"> Tutor
+          </label>
+        </div>
+      </ng-container>
     </div>
-    <ng-container *ngIf="user.username !== 'admin'">
-      <div>
-        <label class="custom-control custom-checkbox">
-          <input type="checkbox" class="custom-control-input" disabled [(ngModel)]="user.isAdmin"
-                 [ngModelOptions]="{standalone: true}"> Administrator
-        </label>
-      </div>
-      <div>
-        <label class="custom-control custom-checkbox">
-          <input type="checkbox" class="custom-control-input" disabled [(ngModel)]="user.isMod"
-                 [ngModelOptions]="{standalone: true}"> Moderator
-        </label>
-      </div>
-      <div>
-        <label class="custom-control custom-checkbox">
-          <input type="checkbox" class="custom-control-input" disabled [(ngModel)]="user.isUser"
-                 [ngModelOptions]="{standalone: true}"> User
-        </label>
-      </div>
-    </ng-container>
   </div>
 </div>
