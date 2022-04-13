@@ -32,7 +32,7 @@ export class AttendanceDetailsComponent implements OnInit {
     organizational: false,
   };
 
-  semester: string[] = ['SS21', 'WS2122'];
+  semester: string[] = ['SS22', 'WS2122', 'SS21'];
 
   constructor(
     private attendanceService: AttendanceService,

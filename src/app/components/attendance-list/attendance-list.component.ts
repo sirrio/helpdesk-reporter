@@ -21,7 +21,7 @@ export class AttendanceListComponent implements OnInit {
   username?: string;
   userid?: any;
   tmpAttendance: Attendance = {
-    semester: 'WS2122',
+    semester: 'SS22',
     date: this.datepipe.transform(new Date(), 'yyyy-MM-dd') || '1970-01-01',
     startTime: '10:00',
     endTime: '12:00',
@@ -37,8 +37,8 @@ export class AttendanceListComponent implements OnInit {
     tutor: 0
   };
 
-  semester: string[] = ['WS2122', 'SS21'];
-  currentSemester = 'WS2122';
+  semester: string[] = ['SS22', 'WS2122', 'SS21'];
+  currentSemester = 'SS22';
 
   constructor(
     private attendanceService: AttendanceService,
