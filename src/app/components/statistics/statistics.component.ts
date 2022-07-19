@@ -41,8 +41,8 @@ export class StatisticsComponent implements OnInit {
   noBarWhenZero = false;
   statsHeight = 800;
 
-  semester: string[] = ['WS2122', 'SS21'];
-  currentSemester = 'WS2122';
+  semester: string[] = ['SS22', 'WS2122', 'SS21'];
+  currentSemester = 'SS22';
 
   colorSchemeBar = {
     domain: [
